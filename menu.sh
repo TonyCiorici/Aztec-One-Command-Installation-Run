@@ -114,7 +114,7 @@ EOF
 
 view_logs() {
     echo -e "${YELLOW}📜 Live Aztec Logs...${NC}"
-    journalctl -u aztec -f --no-pager
+    journalctl -u aztec -f -o cat --no-pager
 }
 
 reconfigure() {
@@ -202,7 +202,7 @@ run_node() {
     clear
     show_header
     echo -e "${BLUE}🚀 Starting Aztec Node in Auto-Restart Mode...${NC}"
-
+    sudo rm -rf /tmp/aztec-world-state-*
     sudo systemctl daemon-reload
     sudo systemctl restart aztec
 
