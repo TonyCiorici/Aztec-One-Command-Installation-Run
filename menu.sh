@@ -59,6 +59,7 @@ install_full() {
 
     echo -e "${GREEN}🔁 Running aztec-up alpha-testnet...${NC}"
     aztec-up alpha-testnet
+    aztec-up latest
 EONG
 
     echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
