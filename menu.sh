@@ -113,10 +113,13 @@ EOF
 }
 
 view_logs() {
-    echo -e "${YELLOW}📜 Live Aztec Logs...${NC}"
+    echo -e "${YELLOW}📜 Showing last 100 Aztec logs...${NC}"
     journalctl -u aztec -n 100 --no-pager --output cat
 
+    echo -e "\n${YELLOW}📡 Streaming live logs... Press Ctrl+C to stop.${NC}\n"
+    journalctl -u aztec -f --no-pager --output cat
 }
+
 
 reconfigure() {
     echo -e "${YELLOW}🔧 Reconfiguring RPC URLs...${NC}"
