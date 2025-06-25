@@ -9,8 +9,12 @@ Welcome to the **Aztec Node Manager**! This guide will help you set up, manage, 
 Run this command in your terminal to launch the interactive menu:
 
 ```bash
-bash <(curl -sL https://github.com/HustleAirdrops/Aztec-One-Command-Installation-Run/raw/main/menu.sh)
+bash <(curl -fsSL https://github.com/HustleAirdrops/Aztec-One-Command-Installation-Run/raw/main/menu.sh)
 ```
+
+> **Note:** During setup, you’ll need to enter your **Sepolia RPC**, **Beacon RPC**, **Private Key**, and **Wallet Address**. Provide these details whenever prompted.
+>
+> Your **wallet** must have Sepolia testnet ETH. You can get free testnet ETH from [https://sepolia-faucet.pk910.de/](https://sepolia-faucet.pk910.de/).
 
 ### 📋 Menu Options Explained
 
