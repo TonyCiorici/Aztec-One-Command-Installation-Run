@@ -114,7 +114,8 @@ EOF
 
 view_logs() {
     echo -e "${YELLOW}📜 Live Aztec Logs...${NC}"
-    journalctl -u aztec -f -o cat --no-pager
+    journalctl -u aztec -n 100 --no-pager --output cat
+
 }
 
 reconfigure() {
@@ -125,20 +126,35 @@ reconfigure() {
         return
     fi
 
-    read -p "🔹 New Sepolia RPC: " new_l1_rpc
-    read -p "🔹 New Beacon RPC: " new_beacon_rpc
+    echo -e "${BLUE}📄 Reading current RPCs from service file...${NC}"
+    
+    old_l1_rpc=$(grep -oP '(?<=--l1-rpc-urls\s)[^\s\\]+' "$AZTEC_SERVICE")
+    old_beacon_rpc=$(grep -oP '(?<=--l1-consensus-host-urls\s)[^\s\\]+' "$AZTEC_SERVICE")
 
-    echo -e "${BLUE}⛔ Stopping Aztec service...${NC}"
+    echo -e "${GREEN}🔎 Current RPCs:"
+    echo -e "   🛰️ Sepolia L1 RPC       : ${YELLOW}$old_l1_rpc${NC}"
+    echo -e "   🌐 Beacon Consensus RPC : ${YELLOW}$old_beacon_rpc${NC}"
+
+    echo ""
+    read -p "🔹 Enter NEW Sepolia L1 RPC: " new_l1_rpc
+    read -p "🔹 Enter NEW Beacon RPC: " new_beacon_rpc
+
+    echo -e "\n${BLUE}⛔ Stopping Aztec service...${NC}"
     sudo systemctl stop aztec
 
+    echo -e "${YELLOW}🛠️ Replacing values in service file...${NC}"
     sudo perl -i -pe "s|--l1-rpc-urls\s+\S+|--l1-rpc-urls $new_l1_rpc|g" "$AZTEC_SERVICE"
     sudo perl -i -pe "s|--l1-consensus-host-urls\s+\S+|--l1-consensus-host-urls $new_beacon_rpc|g" "$AZTEC_SERVICE"
 
+    echo -e "${BLUE}🔄 Reloading systemd and restarting service...${NC}"
     sudo systemctl daemon-reload
     sudo systemctl start aztec
 
-    echo -e "${GREEN}✅ RPCs updated and node restarted!${NC}"
+    echo -e "${GREEN}✅ RPCs updated successfully!"
+    echo -e "   🆕 New Sepolia RPC       : ${YELLOW}$new_l1_rpc${NC}"
+    echo -e "   🆕 New Beacon RPC        : ${YELLOW}$new_beacon_rpc${NC}"
 }
+
 
 uninstall() {
     echo -e "${YELLOW}🧹 Uninstalling Aztec Node...${NC}"
@@ -166,25 +182,26 @@ update_node() {
     sudo systemctl stop aztec
     export PATH="$PATH:$HOME/.aztec/bin"
     aztec-up latest
+    sudo rm -rf /tmp/aztec-world-state-*
     sudo systemctl start aztec
     echo -e "${GREEN}✅ Node updated & restarted!${NC}"
 }
 
 generate_start_command() {
-    echo -e "${YELLOW}⚙️ Generating aztec start command...${NC}"
-    
-    CONFIG="$HOME/.aztec/config.env"
-    
-    if [ ! -f "$CONFIG" ]; then
-        echo -e "${RED}❌ Config file not found! Please run install first.${NC}"
+    echo -e "${YELLOW}⚙️ Generating aztec start command from systemd service...${NC}"
+
+    SERVICE_FILE="/etc/systemd/system/aztec.service"
+
+    if [ ! -f "$SERVICE_FILE" ]; then
+        echo -e "${RED}❌ Systemd service not found at $SERVICE_FILE. Run install first.${NC}"
         return
     fi
 
-    source "$CONFIG"
-
-    [[ $PRIVATE_KEY != 0x* ]] && PRIVATE_KEY="0x$PRIVATE_KEY"
-
-    PUBLIC_IP=$(curl -s ifconfig.me)
+    L1_RPC=$(grep -oP '(?<=--l1-rpc-urls )\S+' "$SERVICE_FILE")
+    BEACON_RPC=$(grep -oP '(?<=--l1-consensus-host-urls )\S+' "$SERVICE_FILE")
+    PRIVATE_KEY=$(grep -oP '(?<=--sequencer.validatorPrivateKey )\S+' "$SERVICE_FILE")
+    EVM_ADDRESS=$(grep -oP '(?<=--sequencer.coinbase )\S+' "$SERVICE_FILE")
+    PUBLIC_IP=$(grep -oP '(?<=--p2p.p2pIp )\S+' "$SERVICE_FILE")
 
     echo -e "${GREEN}🟢 Use the following command to run manually:${NC}"
     echo ""
@@ -194,9 +211,10 @@ generate_start_command() {
     echo "  --l1-consensus-host-urls $BEACON_RPC \\"
     echo "  --sequencer.validatorPrivateKey $PRIVATE_KEY \\"
     echo "  --sequencer.coinbase $EVM_ADDRESS \\"
-    echo "  --p2p.p2pIp $PUBLIC_IP${NC}"
+    echo -e "  --p2p.p2pIp $PUBLIC_IP${NC}"
     echo ""
 }
+
 
 run_node() {
     clear
