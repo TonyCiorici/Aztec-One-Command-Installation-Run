@@ -33,7 +33,7 @@ install_full() {
     sudo rm -rf /var/lib/apt/lists/* && sudo apt clean && sudo apt update --allow-insecure-repositories
     sudo apt install -y docker-ce
     sudo systemctl enable --now docker
-    sudo usermod -aG docker $USER && newgrp docker
+    sudo usermod -aG docker $USER
 
     echo -e "${BLUE}📦 Installing Docker Compose...${NC}"
     sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
