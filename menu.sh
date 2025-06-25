@@ -40,9 +40,15 @@ install_full() {
     sudo chmod +x /usr/local/bin/docker-compose
 
     echo -e "${YELLOW}⚙️ Installing Aztec CLI...${NC}"
-    yes | bash -i <(curl -s https://install.aztec.network)
-    echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+    curl -s https://install.aztec.network | bash
+
+    if ! grep -q 'export PATH="$HOME/.aztec/bin:$PATH"' ~/.bashrc; then
+        echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
+    fi
+    export PATH="$HOME/.aztec/bin:$PATH"
+    echo -e "${GREEN}🔁 Running aztec-up alpha-testnet...${NC}"
     aztec-up alpha-testnet
+
 
     echo -e "${GREEN}🛡️ Configuring Firewall...${NC}"
     sudo ufw allow 22
