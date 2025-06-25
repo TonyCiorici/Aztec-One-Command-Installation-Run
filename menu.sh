@@ -39,16 +39,24 @@ install_full() {
     sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
 
-    echo -e "${YELLOW}⚙️ Installing Aztec CLI...${NC}"
-    curl -s https://install.aztec.network | bash
+    echo -e "${BLUE}📦 Making sure Docker is running...${NC}"
+    sudo systemctl restart docker
+    sleep 3
 
-    if ! grep -q 'export PATH="$HOME/.aztec/bin:$PATH"' ~/.bashrc; then
-        echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
-    fi
+    echo -e "${YELLOW}⚙️ Installing Aztec CLI...${NC}"
+    bash -i <(curl -s https://install.aztec.network)
+
+    echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
+    source ~/.bashrc
     export PATH="$HOME/.aztec/bin:$PATH"
+
+    if ! command -v aztec-up &> /dev/null; then
+        echo -e "${RED}❌ CLI install failed or aztec-up not found. Exiting.${NC}"
+        return
+    fi
+
     echo -e "${GREEN}🔁 Running aztec-up alpha-testnet...${NC}"
     aztec-up alpha-testnet
-
 
     echo -e "${GREEN}🛡️ Configuring Firewall...${NC}"
     sudo ufw allow 22
