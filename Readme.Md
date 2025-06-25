@@ -36,7 +36,8 @@ bash <(curl -fsSL https://github.com/HustleAirdrops/Aztec-One-Command-Installati
 
 Monitor your node logs with:
 ```bash
-journalctl -u aztec -f --no-pager
+journalctl -u aztec -n 100 --no-pager --output cat
+journalctl -u aztec -f --no-pager --output cat
 ```
 
 ---
