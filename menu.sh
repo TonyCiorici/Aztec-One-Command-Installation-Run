@@ -43,20 +43,25 @@ install_full() {
     sudo systemctl restart docker
     sleep 3
 
-    echo -e "${YELLOW}⚙️ Installing Aztec CLI...${NC}"
-    bash -i <(curl -s https://install.aztec.network)
+    echo -e "${YELLOW}⚙️ Installing Aztec CLI (inside docker group shell)...${NC}"
+    newgrp docker <<EONG
+    echo -e "${BLUE}📥 Running Aztec Installer...${NC}"
+    bash <(curl -s https://install.aztec.network)
 
-    echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
-    source ~/.bashrc
-    export PATH="$HOME/.aztec/bin:$PATH"
+    echo 'export PATH="\$HOME/.aztec/bin:\$PATH"' >> \$HOME/.bashrc
+    source \$HOME/.bashrc
+    export PATH="\$HOME/.aztec/bin:\$PATH"
 
     if ! command -v aztec-up &> /dev/null; then
         echo -e "${RED}❌ CLI install failed or aztec-up not found. Exiting.${NC}"
-        return
+        exit 1
     fi
 
     echo -e "${GREEN}🔁 Running aztec-up alpha-testnet...${NC}"
     aztec-up alpha-testnet
+EONG
+
+    echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
 
     echo -e "${GREEN}🛡️ Configuring Firewall...${NC}"
     sudo ufw allow 22
