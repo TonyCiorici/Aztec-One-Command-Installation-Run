@@ -176,10 +176,9 @@ uninstall() {
 }
 
 show_peer_id() {
-    echo -e "${BLUE}🔍 Extracting Peer ID...${NC}"
-    PEER_ID=$(journalctl -u aztec -n 10000 --no-pager | grep -i "peerId" | grep -o '"peerId":"[^"]*"' | cut -d'"' -f4 | head -n 1)
-    [[ -z "$PEER_ID" ]] && echo -e "${RED}❌ Peer ID not found.${NC}" || echo -e "${GREEN}✅ Peer ID: $PEER_ID${NC}"
+    bash <(curl -fsSL https://github.com/HustleAirdrops/Aztec-One-Command-Installation-Run/raw/main/menu.sh)
 }
+
 
 update_node() {
     echo -e "${YELLOW}🔄 Updating Aztec Node...${NC}"
