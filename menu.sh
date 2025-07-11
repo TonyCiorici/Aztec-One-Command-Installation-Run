@@ -177,6 +177,8 @@ uninstall() {
 
 show_peer_id() {
     bash <(curl -fsSL https://github.com/HustleAirdrops/Aztec-One-Command-Installation-Run/raw/main/menu.sh)
+    echo -e "\n${YELLOW}🔁 Press Enter to return to menu...${NC}"
+    read
 }
 
 
@@ -246,7 +248,7 @@ show_header() {
     echo "│  ██║░░██║╚██████╔╝██████╔╝░░░██║░░░███████╗███████╗  ██║░░██║██║██║░░██║██████╔╝██║░░██║╚█████╔╝██║░░░░░██████╔╝  │"
     echo "│  ╚═╝░░╚═╝░╚═════╝░╚═════╝░░░░╚═╝░░░╚══════╝╚══════╝  ╚═╝░░╚═╝╚═╝╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░░░░╚═════╝░  │"
     echo "└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘"
-    echo -e "${YELLOW}                  🚀 Aztec Node Manager by AJ 🚀${NC}"
+    echo -e "${YELLOW}                  🚀 Aztec Node Manager by Aashish 🚀${NC}"
     echo -e "${YELLOW}              GitHub: https://github.com/HustleAirdrops${NC}"
     echo -e "${YELLOW}              Telegram: https://t.me/Hustle_Airdrops${NC}"
     echo -e "${GREEN}===============================================================================${NC}"
@@ -256,7 +258,7 @@ show_header() {
 while true; do
     clear
     show_header
-    echo -e "${BLUE}${BOLD}================ AZTEC NODE MANAGER BY AJ 💖 =================${NC}"
+    echo -e "${BLUE}${BOLD}================ AZTEC NODE MANAGER BY Aashish 💖 =================${NC}"
     echo -e " 1️⃣  Full Install"
     echo -e " 2️⃣  Run Node"
     echo -e " 3️⃣  View Logs"
@@ -278,7 +280,7 @@ while true; do
         6) show_peer_id ;;
         7) update_node ;;
         8) generate_start_command ;;
-        9) echo -e "${GREEN}👋 Exiting... Stay decentralized, AJ!${NC}"; break ;;
+        9) echo -e "${GREEN}👋 Exiting... Stay decentralized, Aashish!${NC}"; break ;;
         *) echo -e "${RED}❌ Invalid option. Try again.${NC}"; sleep 1 ;;
     esac
 
