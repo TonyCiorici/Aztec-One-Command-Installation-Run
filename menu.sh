@@ -111,6 +111,9 @@ EOF
     echo -e "${GREEN}✅ Installation complete!${NC}"
     echo -e "${YELLOW}➡ To check status: systemctl status aztec"
     echo -e "${BLUE}📄 View logs live: journalctl -fu aztec${NC}"
+
+    fix_failed_fetch
+    
 }
 
 view_logs() {
@@ -240,6 +243,15 @@ show_peer_id() {
     read
 }
 
+fix_failed_fetch() {
+    rm -rf ~/.aztec/alpha-testnet/data/archiver
+    rm -rf ~/.aztec/alpha-testnet/data/world-tree
+    rm -rf ~/.bb-crs
+    ls ~/.aztec/alpha-testnet/data
+    docker-compose down
+    rm -rf ./data/archiver ./data/world_state
+    docker-compose up -d
+}
 
 
 update_node() {
