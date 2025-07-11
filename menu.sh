@@ -18,7 +18,7 @@ AZTEC_DATA_DIR="$AZTEC_DIR/alpha-testnet"
 
 install_full() {
     clear
-    echo -e "${YELLOW}${BOLD}🚀 Starting Full Installation by AJ...${NC}"
+    echo -e "${YELLOW}${BOLD}🚀 Starting Full Installation by Aashish...${NC}"
 
     echo -e "${GREEN}🔄 Updating system and installing dependencies...${NC}"
     sudo apt-get update && sudo apt-get upgrade -y
