@@ -78,7 +78,7 @@ EONG
     read -p "🔹 EVM Wallet Address: " evm_address
     node_ip=$(curl -s ifconfig.me)
 sleep 5
-echo " Setting version 0.87.9"
+echo "Setting version 0.87.9"
 aztec-up 0.87.9
 
 sed -i 's/VERSION=\${VERSION:-"latest"}/VERSION=\${VERSION:-"0.87.9"}/' ~/.aztec/bin/.aztec-run
@@ -96,7 +96,7 @@ After=network.target docker.service
 [Service]
 User=$USER
 WorkingDirectory=$HOME
-ExecStart=/bin/bash -c $HOME/.aztec/bin/aztec aztec start --node --archiver --sequencer \
+ExecStart=$HOME/.aztec/bin/aztec aztec start --node --archiver --sequencer \
   --network alpha-testnet \
   --l1-rpc-urls $l1_rpc \
   --l1-consensus-host-urls $beacon_rpc \
