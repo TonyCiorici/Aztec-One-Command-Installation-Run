@@ -80,10 +80,6 @@ EONG
 sleep 5
 echo " Setting version 0.87.9"
 sed -i 's/VERSION=\${VERSION:-"latest"}/VERSION=\${VERSION:-"0.87.9"}/' ~/.aztec/bin/.aztec-run
-
-cat ~/.aztec/bin/.aztec-run | grep VERSION
-
-echo
 sleep 5
     echo -e "${BLUE}📄 Creating systemd service...${NC}"
     sudo tee $AZTEC_SERVICE > /dev/null <<EOF
