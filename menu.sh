@@ -79,7 +79,6 @@ EONG
     node_ip=$(curl -s ifconfig.me)
 sleep 5
 echo "Setting version 0.87.9"
-aztec-up 0.87.9
 
 sed -i 's/VERSION=\${VERSION:-"latest"}/VERSION=\${VERSION:-"0.87.9"}/' ~/.aztec/bin/.aztec-run
 
