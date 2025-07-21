@@ -95,7 +95,7 @@ After=network.target docker.service
 [Service]
 User=$USER
 WorkingDirectory=$HOME
-ExecStart=/bin/bash -c '$HOME/.aztec/bin/aztec aztec start --node --archiver --sequencer \
+ExecStart=/bin/bash -c '$HOME/.aztec/bin/aztec start --node --archiver --sequencer \
   --network alpha-testnet \
   --l1-rpc-urls $l1_rpc \
   --l1-consensus-host-urls $beacon_rpc \
