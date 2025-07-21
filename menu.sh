@@ -96,13 +96,13 @@ After=network.target docker.service
 [Service]
 User=$USER
 WorkingDirectory=$HOME
-ExecStart=/bin/bash -c '$HOME/.aztec/bin/aztec aztec start --node --archiver --sequencer \
+ExecStart=/bin/bash -c $HOME/.aztec/bin/aztec aztec start --node --archiver --sequencer \
   --network alpha-testnet \
   --l1-rpc-urls $l1_rpc \
   --l1-consensus-host-urls $beacon_rpc \
   --sequencer.validatorPrivateKey $private_key \
   --sequencer.coinbase $evm_address \
-  --p2p.p2pIp $node_ip'
+  --p2p.p2pIp $node_ip
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
