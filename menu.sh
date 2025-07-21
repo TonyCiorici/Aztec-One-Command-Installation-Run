@@ -87,13 +87,13 @@ After=network.target docker.service
 [Service]
 User=$USER
 WorkingDirectory=$HOME
-ExecStart=$HOME/.aztec/bin/aztec start --node --archiver --sequencer \\
-  --network alpha-testnet \\
-  --l1-rpc-urls $l1_rpc \\
-  --l1-consensus-host-urls $beacon_rpc \\
-  --sequencer.validatorPrivateKey $private_key \\
-  --sequencer.coinbase $evm_address \\
-  --p2p.p2pIp $node_ip
+ExecStart=/bin/bash -c 'VERSION="0.87.9" $HOME/.aztec/bin/aztec start --node --archiver --sequencer \
+  --network alpha-testnet \
+  --l1-rpc-urls $l1_rpc \
+  --l1-consensus-host-urls $beacon_rpc \
+  --sequencer.validatorPrivateKey $private_key \
+  --sequencer.coinbase $evm_address \
+  --p2p.p2pIp $node_ip'
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
@@ -101,6 +101,7 @@ LimitNOFILE=65535
 [Install]
 WantedBy=multi-user.target
 EOF
+
 
     sudo systemctl daemon-reexec
     sudo systemctl daemon-reload
