@@ -77,7 +77,14 @@ EONG
     [[ $private_key != 0x* ]] && private_key="0x$private_key"
     read -p "🔹 EVM Wallet Address: " evm_address
     node_ip=$(curl -s ifconfig.me)
+sleep 5
+echo " Setting version 0.87.9"
+sed -i 's/VERSION=\${VERSION:-"latest"}/VERSION=\${VERSION:-"0.87.9"}/' ~/.aztec/bin/.aztec-run
 
+cat ~/.aztec/bin/.aztec-run | grep VERSION
+
+echo
+sleep 5
     echo -e "${BLUE}📄 Creating systemd service...${NC}"
     sudo tee $AZTEC_SERVICE > /dev/null <<EOF
 [Unit]
@@ -87,7 +94,7 @@ After=network.target docker.service
 [Service]
 User=$USER
 WorkingDirectory=$HOME
-ExecStart=/bin/bash -c '$HOME/.aztec/bin/aztec VERSION="0.87.9" aztec start --node --archiver --sequencer \
+ExecStart=/bin/bash -c '$HOME/.aztec/bin/aztec aztec start --node --archiver --sequencer \
   --network alpha-testnet \
   --l1-rpc-urls $l1_rpc \
   --l1-consensus-host-urls $beacon_rpc \
