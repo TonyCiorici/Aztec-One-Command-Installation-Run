@@ -257,7 +257,7 @@ update_node() {
     echo -e "${YELLOW}🔄 Updating Aztec Node...${NC}"
     sudo systemctl stop aztec
     export PATH="$PATH:$HOME/.aztec/bin"
-    aztec-up latest
+    aztec-up 1.1.2
     sudo rm -rf /tmp/aztec-world-state-*
     sudo systemctl start aztec
     echo -e "${GREEN}✅ Node updated & restarted!${NC}"
