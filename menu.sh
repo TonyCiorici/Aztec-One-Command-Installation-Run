@@ -58,7 +58,7 @@ install_full() {
     fi
 
     echo -e "${GREEN}🔁 Running aztec-up alpha-testnet...${NC}"
-    aztec-up 0.87.9
+    aztec-up 1.1.2
 EONG
 
     echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
@@ -77,15 +77,6 @@ EONG
     [[ $private_key != 0x* ]] && private_key="0x$private_key"
     read -p "🔹 EVM Wallet Address: " evm_address
     node_ip=$(curl -s ifconfig.me)
-sleep 5
-echo "Setting version 0.87.9"
-
-sed -i 's/VERSION=\${VERSION:-"latest"}/VERSION=\${VERSION:-"0.87.9"}/' ~/.aztec/bin/.aztec-run
-
-cat ~/.aztec/bin/.aztec-run | grep VERSION
-
-echo
-sleep 5
     echo -e "${BLUE}📄 Creating systemd service...${NC}"
     sudo tee $AZTEC_SERVICE > /dev/null <<EOF
 [Unit]
@@ -99,7 +90,7 @@ ExecStart=/bin/bash -c '$HOME/.aztec/bin/aztec start --node --archiver --sequenc
   --network alpha-testnet \
   --l1-rpc-urls $l1_rpc \
   --l1-consensus-host-urls $beacon_rpc \
-  --sequencer.validatorPrivateKey $private_key \
+  --sequencer.validatorPrivateKeys $private_key \
   --sequencer.coinbase $evm_address \
   --p2p.p2pIp $node_ip'
 Restart=always
