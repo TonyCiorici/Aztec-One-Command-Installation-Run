@@ -275,7 +275,7 @@ generate_start_command() {
 
     L1_RPC=$(grep -oP '(?<=--l1-rpc-urls )\S+' "$SERVICE_FILE")
     BEACON_RPC=$(grep -oP '(?<=--l1-consensus-host-urls )\S+' "$SERVICE_FILE")
-    PRIVATE_KEY=$(grep -oP '(?<=--sequencer.validatorPrivateKey )\S+' "$SERVICE_FILE")
+    PRIVATE_KEY=$(grep -oP '(?<=--sequencer.validatorPrivateKeys )\S+' "$SERVICE_FILE")
     EVM_ADDRESS=$(grep -oP '(?<=--sequencer.coinbase )\S+' "$SERVICE_FILE")
     PUBLIC_IP=$(grep -oP '(?<=--p2p.p2pIp )\S+' "$SERVICE_FILE")
 
@@ -285,7 +285,7 @@ generate_start_command() {
     echo "  --network alpha-testnet \\"
     echo "  --l1-rpc-urls $L1_RPC \\"
     echo "  --l1-consensus-host-urls $BEACON_RPC \\"
-    echo "  --sequencer.validatorPrivateKey $PRIVATE_KEY \\"
+    echo "  --sequencer.validatorPrivateKeys $PRIVATE_KEY \\"
     echo "  --sequencer.coinbase $EVM_ADDRESS \\"
     echo -e "  --p2p.p2pIp $PUBLIC_IP${NC}"
     echo ""
