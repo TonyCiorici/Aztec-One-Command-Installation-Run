@@ -76,6 +76,13 @@ EONG
     read -p "🔹 EVM Private Key (with or without 0x): " private_key
     [[ $private_key != 0x* ]] && private_key="0x$private_key"
     read -p "🔹 EVM Wallet Address: " evm_address
+    
+    raw_p2p_key="${private_key#0x}"
+    echo -e "${BLUE}📂 Creating P2P private key file using EVM key...${NC}"
+    mkdir -p ~/.aztec/alpha-testnet/data
+    echo "$raw_p2p_key" > ~/.aztec/alpha-testnet/data/p2p-private-key
+    chmod 600 ~/.aztec/alpha-testnet/data/p2p-private-key
+    
     node_ip=$(curl -s ifconfig.me)
     echo -e "${BLUE}📄 Creating systemd service...${NC}"
     sudo tee $AZTEC_SERVICE > /dev/null <<EOF
