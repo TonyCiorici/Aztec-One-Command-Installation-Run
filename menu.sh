@@ -58,7 +58,7 @@ install_full() {
     fi
 
     echo -e "${GREEN}🔁 Running aztec-up alpha-testnet...${NC}"
-    aztec-up 1.2.0
+    aztec-up latest
 EONG
 
     echo 'export PATH="$HOME/.aztec/bin:$PATH"' >> ~/.bashrc
@@ -257,7 +257,7 @@ update_node() {
     echo -e "${YELLOW}🔄 Updating Aztec Node...${NC}"
     sudo systemctl stop aztec
     export PATH="$PATH:$HOME/.aztec/bin"
-    aztec-up 1.1.2
+    aztec-up 1.2.0
     sudo rm -rf /tmp/aztec-world-state-*
     sudo systemctl start aztec
     echo -e "${GREEN}✅ Node updated & restarted!${NC}"
