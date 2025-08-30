@@ -74,8 +74,6 @@ EONG
     read -p "🔹 EVM Private Key (with or without 0x): " private_key
     [[ $private_key != 0x* ]] && private_key="0x$private_key"
     read -p "🔹 EVM Wallet Address: " evm_address
-    # Modified: Added prompt for P2P Private Key (assuming it's base64-encoded as per the instruction)
-    read -p "🔹 P2P Private Key (base64-encoded): " p2p_private_key
     node_ip=$(curl -s ifconfig.me)
     echo -e "${BLUE}📄 Creating systemd service...${NC}"
     sudo tee $AZTEC_SERVICE > /dev/null <<EOF
@@ -100,10 +98,6 @@ LimitNOFILE=65535
 [Install]
 WantedBy=multi-user.target
 EOF
-
-    # Modified: Create the data directory and decode/save the P2P private key before starting the node
-    mkdir -p ~/.aztec/alpha-testnet/data
-    echo "$p2p_private_key" | base64 -d > ~/.aztec/alpha-testnet/data/p2p-private-key
 
     sudo systemctl daemon-reexec
     sudo systemctl daemon-reload
