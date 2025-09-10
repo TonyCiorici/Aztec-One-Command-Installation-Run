@@ -109,6 +109,7 @@ EOF
     echo -e "${BLUE}📄 View logs live: journalctl -fu aztec${NC}"
 
     fix_failed_fetch
+    sudo rm -rf "$HOME/.aztec/alpha-testnet/data" && sudo mkdir -p "$HOME/.aztec/alpha-testnet" && sudo wget https://files5.blacknodes.net/aztec/aztec-alpha-testnet.tar.lz4 -O /root/aztec-alpha-testnet.tar.lz4 && sudo lz4 -d /root/aztec-alpha-testnet.tar.lz4 | sudo tar x -C "$HOME/.aztec/alpha-testnet" && sudo rm /root/aztec-alpha-testnet.tar.lz4 && sudo chown -R "$USER":"$USER" "$HOME/.aztec/alpha-testnet" && sudo systemctl restart aztec
     
 }
 
