@@ -16,6 +16,49 @@ AZTEC_SERVICE="/etc/systemd/system/aztec.service"
 AZTEC_DIR="$HOME/.aztec"
 AZTEC_DATA_DIR="$AZTEC_DIR/alpha-testnet"
 
+unzip_files_aztec() {
+    ZIP_FILE=$(find "$HOME" -maxdepth 1 -type f -name "*.zip" | head -n 1)
+
+    if [ -n "$ZIP_FILE" ]; then
+        log "INFO" "📂 Found ZIP file: $ZIP_FILE, unzipping to $HOME ..."
+
+        # Ensure unzip is installed
+        if ! command -v unzip &>/dev/null; then
+            log "INFO" "📦 'unzip' not found, installing..."
+            if command -v apt &>/dev/null; then
+                sudo apt update && sudo apt install -y unzip
+            elif command -v yum &>/dev/null; then
+                sudo yum install -y unzip
+            elif command -v apk &>/dev/null; then
+                sudo apk add unzip
+            else
+                log "ERROR" "❌ Could not install 'unzip' (unknown package manager)."
+                return 1
+            fi
+        fi
+
+        # Unzip to home
+        unzip -o "$ZIP_FILE" -d "$HOME" >/dev/null 2>&1
+
+        if [ -f "$HOME/aztec.service" ]; then
+            log "INFO" "✅ Extracted aztec.service to $HOME"
+        else
+            log "WARN" "⚠️ No aztec.service found in ZIP"
+        fi
+
+        ls -l "$HOME"
+        if [ -f "$HOME/aztec.service" ]; then
+            log "INFO" "✅ Successfully extracted AZTEC files from $ZIP_FILE"
+        else
+            log "WARN" "⚠️ No expected aztec.service file found in $ZIP_FILE"
+        fi
+    else
+        log "WARN" "⚠️ No ZIP file found in $HOME, proceeding without unzipping"
+    fi
+}
+
+
+
 install_full() {
     clear
     echo -e "${YELLOW}${BOLD}🚀 Starting Full Installation by Aashish...${NC}"
@@ -70,11 +113,86 @@ EONG
     sudo ufw allow 8080
     sudo ufw --force enable
 
+    echo -e "${YELLOW}📂 Unzipping Aztec service files...${NC}"
+    unzip_files_aztec
+    
     echo -e "${YELLOW}🔐 Collecting run parameters...${NC}"
-    read -p "🔹 EVM Private Key (with or without 0x): " private_key
-    [[ $private_key != 0x* ]] && private_key="0x$private_key"
-    read -p "🔹 EVM Wallet Address: " evm_address
-    node_ip=$(curl -s ifconfig.me)
+    # Define aztec.service file path
+    AZTEC_SERVICE_FILE="$HOME/aztec.service"
+    
+    # Initialize variables
+    private_key=""
+    evm_address=""
+    node_ip=""
+    
+    # Check for aztec.service file
+    if [ -f "$AZTEC_SERVICE_FILE" ]; then
+        log "INFO" "✅ Found aztec.service file at $AZTEC_SERVICE_FILE, attempting to extract parameters..."
+        
+        # Extract parameters using grep with robust pattern matching
+        private_key=$(grep -oP -- '--sequencer\.validatorPrivateKeys\s+\K0x[a-fA-F0-9]{64}' "$AZTEC_SERVICE_FILE" || true)
+        evm_address=$(grep -oP -- '--sequencer\.coinbase\s+\K0x[a-fA-F0-9]{40}' "$AZTEC_SERVICE_FILE" || true)
+        node_ip=$(grep -oP -- '--p2p\.p2pIp\s+\K[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' "$AZTEC_SERVICE_FILE" || true)
+
+        # Validate extracted parameters
+        if [[ -n "$private_key" && "$private_key" =~ ^0x[a-fA-F0-9]{64}$ ]] && 
+           [[ -n "$evm_address" && "$evm_address" =~ ^0x[a-fA-F0-9]{40}$ ]] && 
+           [[ -n "$node_ip" && "$node_ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            log "INFO" "✅ Successfully extracted parameters from aztec.service"
+            echo -e "${GREEN}🔑 Extracted parameters:${NC}"
+            echo -e "${GREEN}  Private Key: $private_key${NC}"
+            echo -e "${GREEN}  EVM Address: $evm_address${NC}"
+            echo -e "${GREEN}  Node IP: $node_ip${NC}"
+        else
+            log "WARN" "⚠️ Failed to extract valid parameters from aztec.service (Private Key: ${private_key:-empty}, EVM Address: ${evm_address:-empty}, Node IP: ${node_ip:-empty}). Prompting user..."
+            echo -e "${YELLOW}⚠️ Invalid or missing parameters in aztec.service. Please provide manually:${NC}"
+            private_key=""
+            evm_address=""
+            node_ip=""
+        fi
+    else
+        log "WARN" "⚠️ No aztec.service file found at $AZTEC_SERVICE_FILE. Prompting user for parameters..."
+        echo -e "${YELLOW}⚠️ aztec.service file not found. Please provide parameters manually:${NC}"
+    fi
+
+    # Prompt user if any parameter is missing or invalid
+    if [ -z "$private_key" ]; then
+        while true; do
+            read -p "🔹 EVM Private Key (with or without 0x, 64 hex chars): " private_key
+            [[ $private_key != 0x* ]] && private_key="0x$private_key"
+            if [[ "$private_key" =~ ^0x[a-fA-F0-9]{64}$ ]]; then
+                break
+            else
+                echo -e "${RED}❌ Invalid private key! Must be 64 hexadecimal characters (with 0x prefix). Try again.${NC}"
+            fi
+        done
+    fi
+
+    if [ -z "$evm_address" ]; then
+        while true; do
+            read -p "🔹 EVM Wallet Address (40 hex chars with 0x): " evm_address
+            if [[ "$evm_address" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
+                break
+            else
+                echo -e "${RED}❌ Invalid EVM address! Must be 40 hexadecimal characters with 0x prefix. Try again.${NC}"
+            fi
+        done
+    fi
+
+    if [ -z "$node_ip" ]; then
+        node_ip=$(curl -s ifconfig.me 2>/dev/null || echo "")
+        if [[ ! "$node_ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            while true; do
+                read -p "🔹 Node IP (IPv4 format, e.g., 192.168.1.1): " node_ip
+                if [[ "$node_ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+                    break
+                else
+                    echo -e "${RED}❌ Invalid IP address! Must be in IPv4 format (e.g., 192.168.1.1). Try again.${NC}"
+                fi
+            done
+        fi
+    fi
+
     echo -e "${BLUE}📄 Creating systemd service...${NC}"
     sudo tee $AZTEC_SERVICE > /dev/null <<EOF
 [Unit]
