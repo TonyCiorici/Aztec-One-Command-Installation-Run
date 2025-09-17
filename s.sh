@@ -14,7 +14,7 @@ BOLD='\033[1m'
 
 AZTEC_SERVICE="/etc/systemd/system/aztec.service"
 AZTEC_DIR="$HOME/.aztec"
-AZTEC_DATA_DIR="$AZTEC_DIR/alpha-testnet"
+AZTEC_DATA_DIR="$AZTEC_DIR/testnet"
 
 unzip_files_aztec() {
     ZIP_FILE=$(find "$HOME" -maxdepth 1 -type f -name "*.zip" | head -n 1)
