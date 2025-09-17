@@ -14,7 +14,7 @@ BOLD='\033[1m'
 
 AZTEC_SERVICE="/etc/systemd/system/aztec.service"
 AZTEC_DIR="$HOME/.aztec"
-AZTEC_DATA_DIR="$AZTEC_DIR/alpha-testnet"
+AZTEC_DATA_DIR="$AZTEC_DIR/testnet"
 
 install_full() {
     clear
